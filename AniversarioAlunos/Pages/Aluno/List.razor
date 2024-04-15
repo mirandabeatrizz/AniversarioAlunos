@@ -1,0 +1,146 @@
+﻿@page "/aluno/list"
+@using AniversarioAlunos.Models
+@inject AniversarioAlunos.Services.IAlunoService alunoService
+@inject IJSRuntime js
+@inject NavigationManager navManager
+@using System.Globalization
+@using Blazorise
+
+<h3>Alunos Cadastrados</h3>
+<button @onclick="() => modalRef.Show()">Adicionar Aluno</button>
+<div>
+    <label>Filtrar:</label>
+    <select @onchange="FiltrarPorMes">
+        <option value="0">Selecione um mês</option>
+        @for (int i = 1; i <= 12; i++)
+        {
+            <option value="@i">@DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
+        }
+    </select>
+
+   
+
+    @if (alunos != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Nome</td>
+                    <td>Aniverário</td>
+                    <td>Ações</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var aluno in alunos)
+                {
+                    <tr>
+                        <td>@aluno.Nome</td>
+                        <td>@aluno.DataAniversario</td>
+                        <td>
+                            <a href="" class="btn btn-warning">Editar</a>
+                            <button class="btn btn-danger" @onclick="(()=> DeletarAluno(aluno.Id))">Deletar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @if (MostrarModal == true)
+    {
+        <div class="modal ">
+            <h3>Adicionar Aluno:</h3>
+            <EditForm Model="aluno" OnValidSubmit="AdicionarAluno">
+                <div class="form-group">
+                    <label for="nome">Nome Completo:</label>
+                    <InputText @bind-Value="aluno.Nome" id="nome" />
+                </div>
+                <div class="form-group">
+                    <label>Data de aniversário:</label>
+                    <InputDate @bind-Value="aluno.DataAniversario" />
+
+                    <br />
+
+                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                </div>
+            </EditForm>
+        </div>
+    }
+   
+</div>
+<Modal @ref="modalRef">
+     <ModalContent>
+        <ModalHeader>
+            <ModalTitle>Adicionar Aluno</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <EditForm Model="@aluno" OnValidSubmit="@AdicionarAluno">
+                <div class="form-group">
+                    <label for="nome">Nome Completo:</label>
+                    <InputText @bind-Value="aluno.Nome" id="nome" />
+                </div>
+                <div class="form-group">
+                <label>Data de aniversário:</label>
+                    <DateEdit @bind-Date="aluno.DataAniversario" />
+                    <button type="submit">Salvar</button>
+                </div>
+            </EditForm>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+
+@code {
+        List<Aluno> alunos = new();
+    private Aluno Model { get; set; }
+    private Aluno aluno = new Aluno();
+    private bool MostrarModal { get; set; } = false;
+    private Modal modalRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        alunos = await alunoService.FindAllAsync();
+    }
+
+    private async Task FiltrarPorMes(ChangeEventArgs e)
+    {
+        int mes = int.Parse(e.Value.ToString());
+        if (mes > 0)
+        {
+            alunos = await alunoService.FiltrarPorMesAsync(mes);
+        }
+        else
+        {
+            alunos = null;
+        }
+    }
+
+    public void Modal()
+    {
+        MostrarModal = true;
+
+    }
+
+    private async Task AdicionarAluno()
+    {
+        await alunoService.CreateAluno(aluno);
+        if (true)
+        {
+            navManager.NavigateTo("/aluno/list");
+        }
+    }
+
+    private async Task DeletarAluno(int alunoId)
+    {
+        var confirm = await js.InvokeAsync<bool>("confirm", "Tem certeza que deseja excluir este aluno?");
+        if(confirm is false) return;
+        else
+        {
+            alunoService.Delete(alunoId);
+            alunos = await alunoService.FindAllAsync();
+            StateHasChanged();
+        }
+    }
+
+   
+}

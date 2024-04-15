@@ -1,0 +1,35 @@
+﻿@page "/aluno/create"
+@using AniversarioAlunos.Models
+@inject AniversarioAlunos.Services.IAlunoService alunoService
+@inject NavigationManager navManager
+
+
+<h3>Adicionar Aluno:</h3>
+
+<EditForm Model="aluno" OnValidSubmit="AdicionarAluno">
+    <div class="form-group">
+        <label for="nome">Nome Completo:</label>
+       <InputText @bind-Value="aluno.Nome" id="nome"/>
+    </div>
+    <div class="form-group">
+        <label>Data de aniversário:</label>
+        <InputDate @bind-Value="aluno.DataAniversario"/>
+
+        <br/>
+
+        <button type="submit" class="btn btn-primary">Adicionar</button>
+    </div>
+</EditForm>
+
+@code{
+    private Aluno aluno = new Aluno();
+
+    private async Task AdicionarAluno()
+    {
+        await alunoService.CreateAluno(aluno);
+        if (true)
+        {
+            navManager.NavigateTo("/aluno/list");
+        }
+    }
+}
