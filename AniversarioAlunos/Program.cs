@@ -1,10 +1,7 @@
 using AniversarioAlunos.Data;
 using AniversarioAlunos.Services;
 using Blazorise;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
-using Blazorise;
 using Blazorise.Bootstrap;
 
 var builder = WebApplication.CreateBuilder(args);

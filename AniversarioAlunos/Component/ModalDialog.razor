@@ -1,0 +1,58 @@
+﻿@inherits ComponentBase
+
+
+<div class="modal-overlay">
+    <div class="modal @CssClass" style="@ModalStyle">
+        <div class="modal-content">
+            <div class="">
+                <button class="close-btn" @onclick="Close">X</button>
+                <h3>@Title</h3>
+            </div>
+           
+                @ChildContent
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit">@ConfirmButton</button>
+                </div>
+           
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string CssClass { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+
+    [Parameter]
+    public object? Model { get; set; }
+
+    [Parameter]
+    public string ConfirmButton { get; set; } = "Salvar";
+
+    private string ModalStyle => IsOpen ? "display:block;" : "display:none;";
+
+    private async Task Close()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+    private void ConfirmAction()
+    {
+        OnConfirm.InvokeAsync();
+    }
+}

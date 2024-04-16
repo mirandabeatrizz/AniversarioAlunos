@@ -4,10 +4,31 @@
 @inject IJSRuntime js
 @inject NavigationManager navManager
 @using System.Globalization
-@using Blazorise
 
 <h3>Alunos Cadastrados</h3>
-<button @onclick="() => modalRef.Show()">Adicionar Aluno</button>
+
+<button @onclick="() => IsModalOpen = true" class="btn">Open Modal</button>
+
+@if(IsModalOpen is true)
+{
+    <ModalDialog Model="@Model" IsOpen="IsModalOpen" IsOpenChanged="HandleModalChange" Title="My Modal" OnConfirm="@AdicionarAluno">
+       <EditForm Model="aluno">
+
+                <div class="form-group">
+                    <label for="nome">Nome Completo:</label>
+                    <InputText @bind-Value="aluno.Nome" id="nome" />
+                </div>
+                <div class="form-group">
+                    <label>Data de aniversário:</label>
+                    <InputDate @bind-Value="aluno.DataAniversario" />
+
+                 </div>
+        </EditForm>
+    </ModalDialog>
+}
+
+
+<button class="btn btn-primary">Adicionar Aluno</button>
 <div>
     <label>Filtrar:</label>
     <select @onchange="FiltrarPorMes">
@@ -17,8 +38,6 @@
             <option value="@i">@DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
         }
     </select>
-
-   
 
     @if (alunos != null)
     {
@@ -44,58 +63,16 @@
                 }
             </tbody>
         </table>
-    }
-
-    @if (MostrarModal == true)
-    {
-        <div class="modal ">
-            <h3>Adicionar Aluno:</h3>
-            <EditForm Model="aluno" OnValidSubmit="AdicionarAluno">
-                <div class="form-group">
-                    <label for="nome">Nome Completo:</label>
-                    <InputText @bind-Value="aluno.Nome" id="nome" />
-                </div>
-                <div class="form-group">
-                    <label>Data de aniversário:</label>
-                    <InputDate @bind-Value="aluno.DataAniversario" />
-
-                    <br />
-
-                    <button type="submit" class="btn btn-primary">Adicionar</button>
-                </div>
-            </EditForm>
-        </div>
-    }
-   
+    }   
 </div>
-<Modal @ref="modalRef">
-     <ModalContent>
-        <ModalHeader>
-            <ModalTitle>Adicionar Aluno</ModalTitle>
-        </ModalHeader>
-        <ModalBody>
-            <EditForm Model="@aluno" OnValidSubmit="@AdicionarAluno">
-                <div class="form-group">
-                    <label for="nome">Nome Completo:</label>
-                    <InputText @bind-Value="aluno.Nome" id="nome" />
-                </div>
-                <div class="form-group">
-                <label>Data de aniversário:</label>
-                    <DateEdit @bind-Date="aluno.DataAniversario" />
-                    <button type="submit">Salvar</button>
-                </div>
-            </EditForm>
-        </ModalBody>
-    </ModalContent>
-</Modal>
+
 
 
 @code {
-        List<Aluno> alunos = new();
-    private Aluno Model { get; set; }
+    List<Aluno> alunos = new();
+    private Aluno? Model { get; set; }
     private Aluno aluno = new Aluno();
-    private bool MostrarModal { get; set; } = false;
-    private Modal modalRef;
+    private bool IsModalOpen = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -115,12 +92,27 @@
         }
     }
 
-    public void Modal()
+    private void HandleModalChange(bool isOpen)
     {
-        MostrarModal = true;
-
+        IsModalOpen = isOpen;
     }
 
+    private async void SaveAluno()
+    {
+        IsModalOpen = false;
+        if(Model != null)
+        {
+            await UpdateAluno();
+        }
+        else
+        {
+            await AdicionarAluno();
+        }
+    }
+    private async Task UpdateAluno()
+    {
+        throw new Exception("nao implementado");
+    }
     private async Task AdicionarAluno()
     {
         await alunoService.CreateAluno(aluno);
