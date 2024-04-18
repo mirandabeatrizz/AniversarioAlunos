@@ -63,6 +63,24 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
+.area-btn-cadastro {
+    display: flex;
+    /* width: 80%; */
+    float: right;
+}
+
+form .form-group{
+    display: flex;
+    flex-direction:column;
+    margin: 20px 0;
+}
+    form .form-group input {
+        border: none;
+        padding: 8px;
+        border-radius: 7px;
+        background: #8888883d;
+    }
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -97,7 +115,7 @@ a, .btn-link {
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 50%;
+    width: 30%;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     display: flex;
 }

@@ -6,13 +6,23 @@
 @using System.Globalization
 
 <h3>Alunos Cadastrados</h3>
+<div class="area-btn-cadastro">
+    <button @onclick="() => IsModalOpen = true" class="btn btn-primary">Adicionar Aluno</button>
+</div>
 
-<button @onclick="() => IsModalOpen = true" class="btn">Open Modal</button>
+<label>Filtrar:</label>
+<select @onchange="FiltrarPorMes">
+    <option value="0">Selecione um mês</option>
+    @for (int i = 1; i <= 12; i++)
+    {
+        <option value="@i">@DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
+    }
+</select>
 
 @if(IsModalOpen is true)
 {
     <ModalDialog Model="@Model" IsOpen="IsModalOpen" IsOpenChanged="HandleModalChange" Title="My Modal" OnConfirm="@AdicionarAluno">
-       <EditForm Model="aluno">
+        <EditForm Model="aluno" OnValidSubmit="AdicionarAluno">
 
                 <div class="form-group">
                     <label for="nome">Nome Completo:</label>
@@ -23,21 +33,13 @@
                     <InputDate @bind-Value="aluno.DataAniversario" />
 
                  </div>
+            <button type="submit" class="btn btn-primary">Adicionar</button>
         </EditForm>
     </ModalDialog>
 }
 
-
-<button class="btn btn-primary">Adicionar Aluno</button>
 <div>
-    <label>Filtrar:</label>
-    <select @onchange="FiltrarPorMes">
-        <option value="0">Selecione um mês</option>
-        @for (int i = 1; i <= 12; i++)
-        {
-            <option value="@i">@DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
-        }
-    </select>
+    
 
     @if (alunos != null)
     {
@@ -56,7 +58,7 @@
                         <td>@aluno.Nome</td>
                         <td>@aluno.DataAniversario</td>
                         <td>
-                            <a href="" class="btn btn-warning">Editar</a>
+                            <button class="btn btn-warning" @onclick="() => IsModalOpen = true">Editar</button>
                             <button class="btn btn-danger" @onclick="(()=> DeletarAluno(aluno.Id))">Deletar</button>
                         </td>
                     </tr>
@@ -85,6 +87,9 @@
         if (mes > 0)
         {
             alunos = await alunoService.FiltrarPorMesAsync(mes);
+        }
+        else if(mes == 0){
+            alunos = await alunoService.FindAllAsync();
         }
         else
         {
@@ -115,11 +120,21 @@
     }
     private async Task AdicionarAluno()
     {
-        await alunoService.CreateAluno(aluno);
+        alunoService.CreateAluno(aluno);
+        alunos = await alunoService.FindAllAsync();
+        LimparFormulario();
+        StateHasChanged();
+        IsModalOpen = false;
+      
         if (true)
         {
             navManager.NavigateTo("/aluno/list");
+            
         }
+    }
+    private void LimparFormulario()
+    {
+        aluno = new Aluno(); // Redefine o modelo, limpando o formulário
     }
 
     private async Task DeletarAluno(int alunoId)
