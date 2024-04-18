@@ -8,5 +8,6 @@ namespace AniversarioAlunos.Services
         Task<List<Aluno>> FindAllAsync();
         Task<List<Aluno>> FiltrarPorMesAsync(int mes);
         Task Delete(int alunoId);
+        Task UpdateAluno(Aluno aluno);
     }
 }
