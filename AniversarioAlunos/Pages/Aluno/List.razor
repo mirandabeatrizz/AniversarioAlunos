@@ -27,8 +27,6 @@
 }
 
 <div>
-    
-
     @if (alunos != null)
     {
         <table class="table">
@@ -63,10 +61,28 @@
     private Aluno? Model { get; set; }
     private Aluno novoAluno = new Aluno();
     private bool IsModalOpen = false;
+    private EditContext editContext;
+
 
     protected override async Task OnInitializedAsync()
     {
         alunos = await alunoService.FindAllAsync();
+        editContext = new EditContext(novoAluno);
+        //editContext.AddValidationStateChangedListener(ValidateDate);
+    }
+
+    
+
+    private void ValidateDate(object sender, ValidationStateChangedEventArgs e)
+    {
+        var fieldIdentifier = new FieldIdentifier(novoAluno, nameof(novoAluno.DataAniversario));
+        var date = novoAluno.DataAniversario;
+        if (date.Year < 1900 || date.Year > 2023)
+        {
+            editContext.NotifyFieldChanged(fieldIdentifier);
+            editContext.NotifyValidationStateChanged();
+           // editContext.AddValidationError(fieldIdentifier, "O ano deve estar entre 1900 e 2023.");
+        }
     }
 
     private void OpenModal(Aluno aluno)
@@ -74,6 +90,27 @@
         novoAluno = aluno;
         IsModalOpen = true;
     }
+
+    private async Task HandleConfirm(Aluno aluno)
+    {
+
+        if (aluno.Id == 0)
+        {
+            await alunoService.CreateAluno(aluno);
+            LimparFormulario();
+            IsModalOpen = false;
+        }
+        else
+        {
+            await alunoService.UpdateAluno(novoAluno);
+            IsModalOpen = false;
+        }
+        alunos = await alunoService.FindAllAsync();
+        StateHasChanged();
+
+       // Recarregar lista de alunos ou atualizar a interface
+    }
+
 
     private async Task FiltrarPorMes(ChangeEventArgs e)
     {
@@ -96,42 +133,6 @@
         IsModalOpen = isOpen;
     }
 
-    private async void SaveAluno()
-    {
-        IsModalOpen = false;
-        if(Model != null)
-        {
-            await UpdateAluno();
-        }
-        else
-        {
-            await AdicionarAluno();
-        }
-    }
-
-    private async Task UpdateAluno()
-    {
-        await alunoService.UpdateAluno(novoAluno);
-        alunos = await alunoService.FindAllAsync();
-        StateHasChanged();
-        IsModalOpen = false;
-
-    }
-
-    private async Task AdicionarAluno()
-    {
-        await alunoService.CreateAluno(novoAluno);
-        alunos = await alunoService.FindAllAsync();
-        LimparFormulario();
-        StateHasChanged();
-        IsModalOpen = false;
-      
-        if (true)
-        {
-            navManager.NavigateTo("/aluno/list");
-            
-        }
-    }
     private void LimparFormulario()
     {
         novoAluno = new Aluno(); // Redefine o modelo, limpando o formulário
@@ -148,35 +149,5 @@
             StateHasChanged();
         }
     }
-    private async Task HandleConfirm(Aluno aluno)
-    {
-        await alunoService.UpdateAluno(novoAluno);
-        alunos = await alunoService.FindAllAsync();
-        StateHasChanged();
-        IsModalOpen = false;
-
-       /* await alunoService.CreateAluno(aluno);
-         alunos = await alunoService.FindAllAsync();
-         LimparFormulario();
-         StateHasChanged();
-         IsModalOpen = false;*/
-
-
-        if (aluno.Id == null)
-        {
-            alunoService.CreateAluno(aluno);
-            alunos = await alunoService.FindAllAsync();
-            LimparFormulario();
-            StateHasChanged();
-            IsModalOpen = false;
-        }
-        else
-        {
-            // Atualizar aluno
-        }
-
-        // Recarregar lista de alunos ou atualizar a interface
-    }
-
-   
+    
 }

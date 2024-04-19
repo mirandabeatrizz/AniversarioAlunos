@@ -3,16 +3,19 @@
 
 
 <div class="modal-overlay">
-    <div class="modal @CssClass" style="@ModalStyle">
+    <div class="modal" style="@ModalStyle">
         <div class="modal-content">
             <div class="">
                 <button class="close-btn" @onclick="Close">X</button>
                 <h3>@Title</h3>
             </div>
             <EditForm Model="@Aluno" OnValidSubmit="HandleSave">
+                <DataAnnotationsValidator />
+                <!-- <ValidationSummary />-->
                 <div class="form-group">
                     <label for="nome">Nome Completo:</label>
                     <InputText @bind-Value="Aluno.Nome" />
+                    <ValidationMessage For="@(() => Aluno.Nome)" />
                 </div>
                 <div class="form-group">
                     <label>Data de aniversário:</label>
@@ -34,10 +37,7 @@
     public bool IsOpen { get; set; }
 
     [Parameter]
-    public string Title { get; set; }
-
-    [Parameter]
-    public string CssClass { get; set; }
+    public string ?Title { get; set; }
 
     [Parameter]
     public EventCallback<bool> IsOpenChanged { get; set; }
@@ -51,7 +51,11 @@
     [Parameter]
     public string ConfirmButton { get; set; } = "Salvar";
 
+    private bool IsNew => Aluno?.Id == 0; // Assume que um novo aluno tem ID 0
+
     private string ModalStyle => IsOpen ? "display:block;" : "display:none;";
+
+   
 
     private async Task Close()
     {
