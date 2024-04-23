@@ -7,9 +7,10 @@ using Blazorise.Bootstrap;
 var builder = WebApplication.CreateBuilder(args);
 
 //builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("DataBaseAniversarioAlunos"));
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-    new MySqlServerVersion(new Version(8, 0, 21))));
+
+builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+new MySqlServerVersion(new Version(8, 0, 21))));
+
 builder.Services.AddScoped<IAlunoService, AlunoService>();
 
 // Add services to the container.

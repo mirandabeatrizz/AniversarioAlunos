@@ -7,8 +7,8 @@ namespace AniversarioAlunos.Services
     public class AlunoService :IAlunoService
     {
         private readonly AppDbContext _context;
-
         public AlunoService(AppDbContext context) { _context = context; }
+
         public async Task<List<Aluno>> FindAllAsync()
         {
             try
@@ -36,15 +36,6 @@ namespace AniversarioAlunos.Services
                 throw;
             }
            
-        }
-
-        public async Task<List<Aluno>> FiltrarPorMesAsync(int mes)
-        {
-            if(mes< 1 || mes > 12)
-            {
-                throw new ArgumentException("mes invalido");
-            }
-            return await  _context.Alunos.Where(a => a.DataAniversario.Month == mes).ToListAsync();
         }
 
         public async Task UpdateAluno(Aluno aluno)
@@ -77,6 +68,14 @@ namespace AniversarioAlunos.Services
 
         }
 
+        public async Task<List<Aluno>> FiltrarPorMesAsync(int mes)
+        {
+            if (mes < 1 || mes > 12)
+            {
+                throw new ArgumentException("mês invalido");
+            }
+            return await _context.Alunos.Where(a => a.DataAniversario.Month == mes).ToListAsync();
+        }
 
     }
 }

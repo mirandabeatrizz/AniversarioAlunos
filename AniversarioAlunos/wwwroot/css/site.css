@@ -63,15 +63,31 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
+.area-acoes {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+}
 .area-btn-cadastro {
     display: flex;
     /* width: 80%; */
     float: right;
 }
+.area-acoes label {
+    font-size: 14px;
+    color: #3d4349;
+    padding: .5rem;
+}
 
-form .form-group{
+.area-acoes select {
+    padding: 0.2rem;
+    font-size: 14px;
+}
+
+form .form-group {
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     margin: 20px 0;
 }
     form .form-group input {

@@ -10,13 +10,18 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="aluno/list" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="aluno/create">
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Adicionar aluno
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="aluno/list">
+                <span class="oi oi-dashboard" aria-hidden="true"></span> Lista alunos
             </NavLink>
         </div>
     </nav>

@@ -6,19 +6,22 @@
 @using System.Globalization
 
 <h3>Alunos Cadastrados</h3>
+<div class="area-acoes">
+    <div class="area-btn-cadastro">
+        <button @onclick="() => OpenModal(new Aluno())" class="btn btn-primary">Adicionar</button>
+    </div>
 
-<div class="area-btn-cadastro">
-    <button @onclick="() => OpenModal(new Aluno())" class="btn btn-primary">Adicionar</button>
+    <div class="area-filtro">
+        <label>Filtrar:</label>
+        <select @onchange="FiltrarPorMes">
+            <option value="0">Selecione um mês</option>
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i">@DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
+            }
+        </select>
+    </div>
 </div>
-
-<label>Filtrar:</label>
-<select @onchange="FiltrarPorMes">
-    <option value="0">Selecione um mês</option>
-    @for (int i = 1; i <= 12; i++)
-    {
-        <option value="@i">@DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
-    }
-</select>
 
 @if(IsModalOpen is true)
 {
@@ -62,25 +65,10 @@
     private Aluno? Model { get; set; }
     private Aluno novoAluno = new Aluno();
     private bool IsModalOpen = false;
-    private EditContext ?editContext;
-
+  
     protected override async Task OnInitializedAsync()
     {
         alunos = await alunoService.FindAllAsync();
-        editContext = new EditContext(novoAluno);
-        //editContext.AddValidationStateChangedListener(ValidateDate);
-    }
-
-    private void ValidateDate(object sender, ValidationStateChangedEventArgs e)
-    {
-        var fieldIdentifier = new FieldIdentifier(novoAluno, nameof(novoAluno.DataAniversario));
-        var date = novoAluno.DataAniversario;
-        if (date.Year < 1900 || date.Year > 2023)
-        {
-            editContext.NotifyFieldChanged(fieldIdentifier);
-            editContext.NotifyValidationStateChanged();
-           // editContext.AddValidationError(fieldIdentifier, "O ano deve estar entre 1900 e 2023.");
-        }
     }
 
     private void OpenModal(Aluno aluno)

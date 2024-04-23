@@ -17,7 +17,7 @@
                 </div>
                 <div class="form-group">
                     <label>Data de aniversário:</label>
-                    <InputDate @bind-Value="Aluno.DataAniversario" />
+                    <InputDate @bind-Value="Aluno.DataAniversario" Min="1800-01-01"/>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Salvar</button>
@@ -49,11 +49,7 @@
     [Parameter]
     public string ConfirmButton { get; set; } = "Salvar";
 
-   //private bool IsNew => Aluno?.Id == 0; // Assume que um novo aluno tem ID 0
-
     private string ModalStyle => IsOpen ? "display:block;" : "display:none;";
-
-   
 
     private async Task Close()
     {

@@ -11,7 +11,6 @@ namespace AniversarioAlunos.Models
         public string ?Nome { get; set; }
 
         [Required(ErrorMessage ="é preciso informar a data de aniversário ")]
-      //  [YearRange(1900, 2024)]
         public DateOnly DataAniversario { get; set; }
 
         public Aluno() { }

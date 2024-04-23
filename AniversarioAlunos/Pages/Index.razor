@@ -5,6 +5,7 @@
 @inject NavigationManager navManager
 @using System.Globalization
 @inject AniversarioAlunos.Data.AppDbContext dbContext
+
 <h3>Alunos Cadastrados</h3>
 
 <div class="area-btn-cadastro">
@@ -62,7 +63,6 @@
     private Aluno? Model { get; set; }
     private Aluno novoAluno = new Aluno();
     private bool IsModalOpen = false;
-    private EditContext? editContext;
 
     protected override async Task OnInitializedAsync()
     {
