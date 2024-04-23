@@ -1,9 +1,136 @@
 ﻿@page "/"
+@using AniversarioAlunos.Models
+@inject AniversarioAlunos.Services.IAlunoService alunoService
+@inject IJSRuntime js
+@inject NavigationManager navManager
+@using System.Globalization
+@inject AniversarioAlunos.Data.AppDbContext dbContext
+<h3>Alunos Cadastrados</h3>
 
-<PageTitle>Index</PageTitle>
+<div class="area-btn-cadastro">
+    <button @onclick="() => OpenModal(new Aluno())" class="btn btn-primary">Adicionar</button>
+</div>
 
-<h1>Hello, world!</h1>
+<label>Filtrar:</label>
+<select @onchange="FiltrarPorMes">
+    <option value="0">Selecione um mês</option>
+    @for (int i = 1; i <= 12; i++)
+    {
+        <option value="@i">@DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
+    }
+</select>
 
-Welcome to your new app.
+@if (IsModalOpen is true)
+{
+    <ModalDialog Model="@Model" Aluno="novoAluno" IsOpen="IsModalOpen" IsOpenChanged="HandleModalChange" Title="Cadastro Aluno" OnConfirm="HandleConfirm">
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    </ModalDialog>
+}
+
+<div>
+    @if (alunos != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Nome</td>
+                    <td>Aniverário</td>
+                    <td>Ações</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var aluno in alunos)
+                {
+                    <tr>
+                        <td>@aluno.Nome</td>
+                        <td>@aluno.DataAniversario</td>
+                        <td>
+                            <button class="btn btn-warning" @onclick="() => OpenModal(aluno)">Editar</button>
+                            <button class="btn btn-danger" @onclick="(()=> DeletarAluno(aluno.Id))">Deletar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+
+
+@code {
+    List<Aluno> alunos = new();
+    private Aluno? Model { get; set; }
+    private Aluno novoAluno = new Aluno();
+    private bool IsModalOpen = false;
+    private EditContext? editContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+       alunos = await alunoService.FindAllAsync();        
+    }
+
+    private void OpenModal(Aluno aluno)
+    {
+        novoAluno = aluno;
+        IsModalOpen = true;
+    }
+
+    private async Task HandleConfirm(Aluno aluno)
+    {
+
+        if (aluno.Id == 0)
+        {
+            await alunoService.CreateAluno(aluno);
+            LimparFormulario();
+            IsModalOpen = false;
+        }
+        else
+        {
+            await alunoService.UpdateAluno(novoAluno);
+            IsModalOpen = false;
+        }
+        alunos = await alunoService.FindAllAsync();
+        StateHasChanged();  // Recarregar lista de alunos ou atualizar a interface
+    }
+
+
+    private async Task FiltrarPorMes(ChangeEventArgs e)
+    {
+        int mes = int.Parse(e.Value.ToString());
+        if (mes > 0)
+        {
+            alunos = await alunoService.FiltrarPorMesAsync(mes);
+        }
+        else if (mes == 0)
+        {
+            alunos = await alunoService.FindAllAsync();
+        }
+        else
+        {
+            alunos = null;
+        }
+    }
+
+    private void HandleModalChange(bool isOpen)
+    {
+        IsModalOpen = isOpen;
+    }
+
+    private void LimparFormulario()
+    {
+        novoAluno = new Aluno(); // Redefine o modelo, limpando o formulário
+    }
+
+    private async Task DeletarAluno(int alunoId)
+    {
+        var confirm = await js.InvokeAsync<bool>("confirm", "Tem certeza que deseja excluir este aluno?");
+        if (confirm is false) return;
+        else
+        {
+            await alunoService.Delete(alunoId);
+            alunos = await alunoService.FindAllAsync();
+            StateHasChanged();
+        }
+    }
+
+}

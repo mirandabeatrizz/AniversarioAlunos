@@ -6,6 +6,7 @@
 @using System.Globalization
 
 <h3>Alunos Cadastrados</h3>
+
 <div class="area-btn-cadastro">
     <button @onclick="() => OpenModal(new Aluno())" class="btn btn-primary">Adicionar</button>
 </div>
@@ -61,8 +62,7 @@
     private Aluno? Model { get; set; }
     private Aluno novoAluno = new Aluno();
     private bool IsModalOpen = false;
-    private EditContext editContext;
-
+    private EditContext ?editContext;
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,8 +70,6 @@
         editContext = new EditContext(novoAluno);
         //editContext.AddValidationStateChangedListener(ValidateDate);
     }
-
-    
 
     private void ValidateDate(object sender, ValidationStateChangedEventArgs e)
     {
@@ -106,9 +104,7 @@
             IsModalOpen = false;
         }
         alunos = await alunoService.FindAllAsync();
-        StateHasChanged();
-
-       // Recarregar lista de alunos ou atualizar a interface
+        StateHasChanged();  // Recarregar lista de alunos ou atualizar a interface
     }
 
 

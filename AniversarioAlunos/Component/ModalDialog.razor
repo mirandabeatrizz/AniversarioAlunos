@@ -1,7 +1,6 @@
 ﻿@inherits ComponentBase
 @using AniversarioAlunos.Models
 
-
 <div class="modal-overlay">
     <div class="modal" style="@ModalStyle">
         <div class="modal-content">
@@ -11,7 +10,6 @@
             </div>
             <EditForm Model="@Aluno" OnValidSubmit="HandleSave">
                 <DataAnnotationsValidator />
-                <!-- <ValidationSummary />-->
                 <div class="form-group">
                     <label for="nome">Nome Completo:</label>
                     <InputText @bind-Value="Aluno.Nome" />
@@ -51,7 +49,7 @@
     [Parameter]
     public string ConfirmButton { get; set; } = "Salvar";
 
-    private bool IsNew => Aluno?.Id == 0; // Assume que um novo aluno tem ID 0
+   //private bool IsNew => Aluno?.Id == 0; // Assume que um novo aluno tem ID 0
 
     private string ModalStyle => IsOpen ? "display:block;" : "display:none;";
 
@@ -62,10 +60,12 @@
         IsOpen = false;
         await IsOpenChanged.InvokeAsync(IsOpen);
     }
+
     private void ConfirmAction()
     {
         OnConfirm.InvokeAsync();
     }
+
     private async Task HandleSave()
     {
         await OnConfirm.InvokeAsync(Aluno);

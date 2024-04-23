@@ -9,16 +9,33 @@ namespace AniversarioAlunos.Services
         private readonly AppDbContext _context;
 
         public AlunoService(AppDbContext context) { _context = context; }
+        public async Task<List<Aluno>> FindAllAsync()
+        {
+            try
+            {
+                return await _context.Alunos.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+               
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
 
         public async Task CreateAluno(Aluno aluno)
         {
-            _context.Add(aluno);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<List<Aluno>> FindAllAsync()
-        {
-            return await _context.Alunos.ToListAsync();
+            try
+            {
+                _context.Add(aluno);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+           
         }
 
         public async Task<List<Aluno>> FiltrarPorMesAsync(int mes)
